@@ -22,9 +22,52 @@
 ;;;  - Built-in customization framework
 
 ;;; Guardrail
-
 (when (< emacs-major-version 29)
   (error (format "Emacs Bedrock only works with Emacs 29 and newer; you have version ~a" emacs-major-version)))
+
+(defvar elpaca-installer-version 0.7)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                 ,@(when-let ((depth (plist-get order :depth)))
+                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                 ,(plist-get order :repo) ,repo))))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca elpaca-use-package
+  ;; Enable Elpaca support for use-package's :ensure keyword.
+  (elpaca-use-package-mode))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -51,7 +94,6 @@
 ;(setopt inhibit-splash-screen t)
 
 (setopt initial-major-mode 'fundamental-mode)  ; default mode for the *scratch* buffer
-(setopt display-time-default-load-average nil) ; this information is useless for most
 
 ;; Automatically reread from disk if the underlying file changes
 (setopt auto-revert-avoid-polling t)
@@ -146,12 +188,12 @@ If the new path's directories does not exist, create them."
 (setopt x-underline-at-descent-line nil)           ; Prettier underlines
 (setopt switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
 
-(setopt show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
+(setopt show-trailing-whitespace t)      ; By default, don't underline trailing spaces
 (setopt indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
 
 ;; Enable horizontal scrolling
-(setopt mouse-wheel-tilt-scroll t)
-(setopt mouse-wheel-flip-direction t)
+;(setopt mouse-wheel-tilt-scroll t)
+;(setopt mouse-wheel-flip-direction t)
 
 ;; We won't set these, but they're good to know about
 ;;
@@ -159,7 +201,7 @@ If the new path's directories does not exist, create them."
 ;; (setopt tab-width 4)
 
 ;; Misc. UI tweaks
-(blink-cursor-mode -1)                                ; Steady cursor
+(blink-cursor-mode 1)                                ; Steady cursor
 (pixel-scroll-precision-mode)                         ; Smooth scrolling
 
 ;; Use common keystrokes by default
@@ -176,6 +218,9 @@ If the new path's directories does not exist, create them."
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
   (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
 
+;; Add colorized compiler output
+(use-package fancy-compilation
+  :commands (fancy-compilation-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Tab-bar configuration
@@ -252,3 +297,11 @@ If the new path's directories does not exist, create them."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Init cleanup
+(defun init-cleanup-gc ()
+  "Clean up gc."
+  (setq gc-cons-threshold (* 1024 1024 128)
+        max-specpdl-size 5000) ; 64M or whatever value you like
+  (garbage-collect))
+(run-with-idle-timer 4 nil #'init-cleanup-gc)
