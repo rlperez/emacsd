@@ -29,8 +29,9 @@
 
 ;; Add vterm and use fish as default
 (use-package vterm
-    :ensure
-    (setq vterm-shell "/bin/fish"))
+    :ensure t
+    :init
+    (setopt vterm-shell "/bin/fish"))
 
 (use-package emacs
   :config
@@ -49,6 +50,14 @@
   :hook
   ;; Auto parenthesis matching
   ((prog-mode . electric-pair-mode)))
+
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
