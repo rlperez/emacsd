@@ -102,6 +102,10 @@
 (setopt auto-revert-interval 5)
 (setopt auto-revert-check-vc-info t)
 (global-auto-revert-mode)
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
 
 ;; Save history of minibuffer
 (savehist-mode)
@@ -110,7 +114,8 @@
 (windmove-default-keybindings 'control) ; You can use other modifiers here
 
 ;; Fix archaic defaults
-(setopt sentence-end-double-space nil)
+(setopt sentence-end-double-space nil
+        require-final-newline t)
 
 ;; Make right-click do something sensible
 (when (display-graphic-p)
@@ -243,9 +248,24 @@ If the new path's directories does not exist, create them."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package emacs
+;; Use doom emacs themes because they are so nice
+(use-package doom-themes
+  :ensure t
   :config
-  (load-theme 'modus-vivendi))          ; for light theme, use modus-operandi
+  ;; Global settings (defaults)
+  (setopt doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-feather-dark t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;; (doom-themes-neotree-config)
+  ;; or for treemacs users
+  ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  ;; (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  ;; (doom-themes-org-config))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -258,13 +278,13 @@ If the new path's directories does not exist, create them."
 
 ;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
 ;; These ones are *strongly* recommended!
-;(load-file (expand-file-name "extras/base.el" user-emacs-directory))
+(load-file (expand-file-name "extras/base.el" user-emacs-directory))
 
 ;; Packages for software development
-;(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
+(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
 
 ;; Vim-bindings in Emacs (evil-mode configuration)
-;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
+(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
 
 ;; Org-mode configuration
 ;; WARNING: need to customize things inside the elisp file before use! See
@@ -299,9 +319,9 @@ If the new path's directories does not exist, create them."
  )
 
 ;; Init cleanup
-(defun init-cleanup-gc ()
+(defun rlp--init-cleanup-gc ()
   "Clean up gc."
-  (setq gc-cons-threshold (* 1024 1024 128)
-        max-specpdl-size 5000) ; 64M or whatever value you like
+  (setopt gc-cons-threshold (* 1024 1024 128) ; 128M
+        max-specpdl-size 5000)
   (garbage-collect))
-(run-with-idle-timer 4 nil #'init-cleanup-gc)
+(run-with-idle-timer 4 nil #'rlp--init-cleanup-gc)
