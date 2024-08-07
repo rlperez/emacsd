@@ -1,3 +1,6 @@
+# Note From Me
+This is my personal emacs configuration. It is based on Emacs Bedrock as it is configured with the majority of the things I would add in my own from scratch emacs.d directory. It is far less opinionated than [Doom Emacs](https://github.com/doomemacs/) or [Spacemacs](https://www.spacemacs.org/) and my own configuration includes parts of doom. Both of which are very good starting points especially if you come from a vim based editor looking to try something new. Additionally, at least as the time of creating this repo, Bedrock is actively developed and leverages the changes in the last couple major versions of Emacs.
+
 # Emacs Bedrock
 
 Stepping stones to a better Emacs experience
