@@ -27,6 +27,11 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Add vterm and use fish as default
+(use-package vterm
+    :ensure
+    (setq vterm-shell "/bin/fish"))
+
 (use-package emacs
   :config
   ;; Treesitter config
