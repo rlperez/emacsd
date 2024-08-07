@@ -192,7 +192,7 @@ If the new path's directories does not exist, create them."
 
 (setopt x-underline-at-descent-line nil)           ; Prettier underlines
 (setopt switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
-;; (setopt show-trailing-whitespace t)
+(setopt show-trailing-whitespace t)
 (add-hook
  'vterm-mode-hook
  (lambda() (setq-local show-trailing-whitespace nil)))
