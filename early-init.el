@@ -36,6 +36,6 @@
 
                             ;; Setting the face in here prevents flashes of
                             ;; color as the theme gets activated
-                            (background-color . "#000000")
+                            (background-color . "#333333")
                             (ns-appearance . dark)
                             (ns-transparent-titlebar . t)))
