@@ -192,8 +192,11 @@ If the new path's directories does not exist, create them."
 
 (setopt x-underline-at-descent-line nil)           ; Prettier underlines
 (setopt switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
+;; (setopt show-trailing-whitespace t)
+(add-hook
+ 'vterm-mode-hook
+ (lambda() (setq-local show-trailing-whitespace nil)))
 
-(setopt show-trailing-whitespace t)      ; By default, don't underline trailing spaces
 (setopt indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
 
 ;; Enable horizontal scrolling
@@ -253,12 +256,11 @@ If the new path's directories does not exist, create them."
   :ensure t
   :config
   ;; Global settings (defaults)
-  (setopt doom-themes-enable-bold t    ; if nil, bold is universally disabled
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-feather-dark t)
-
   ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
+  (doom-themes-visual-bell-config))
   ;; Enable custom neotree theme (all-the-icons must be installed!)
   ;; (doom-themes-neotree-config)
   ;; or for treemacs users
