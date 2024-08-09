@@ -179,3 +179,24 @@
   :ensure t
   :config
   (setopt wgrep-auto-save-buffer t))
+
+(use-package popper
+  :ensure t ; or :straight t
+  :bind (("C-`"   . popper-toggle)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+	  "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+	  "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+	  "^\\*term.*\\*$"   term-mode   ;term as a popup
+	  "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+          help-mode
+          compilation-mode)
+	popper-group-function #'popper-group-by-project) ; project.el projects
+  :config
+  (popper-mode +1)
+  (popper-echo-mode +1))		; For echo area hints
