@@ -103,9 +103,9 @@
   ;; no :ensure t here because it's built-in
 
   ;; Configure hooks to automatically turn-on eglot for selected modes
-  ; :hook
+  :hook
   ; (((python-mode ruby-mode elixir-mode) . eglot))
-
+  (((typescript-ts-mode) . eglot-ensure))
   :custom
   (eglot-send-changes-idle-time 0.1)
   (eglot-extend-to-xref t)              ; activate Eglot in referenced non-project files
