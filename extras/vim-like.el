@@ -35,9 +35,3 @@
   (setopt evil-collection-setup-minibuffer t)
   :config
   (evil-collection-init))
-
-(use-package evil-leader
-  :after evil
-  :ensure t
-  :config
-  (global-evil-leader-mode))
