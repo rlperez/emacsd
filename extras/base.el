@@ -169,6 +169,18 @@
   :config
   (setopt completion-styles '(orderless)))
 
+(use-package nerd-icons)
+(use-package nerd-icons-completion)
+(use-package nerd-icons-corfu)
+(use-package nerd-icons-dired)
+
+;; doom-modeline 
+(use-package doom-modeline
+  :ensure t
+  :config
+  (setopt find-file-visit-truename t)
+  :hook (after-init . doom-modeline-mode))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Misc. editing enhancements
@@ -194,6 +206,7 @@
 	  "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
 	  "^\\*term.*\\*$"   term-mode   ;term as a popup
 	  "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+	  "^\\*elpaca-info*\\*$" elpaca-info-mode ;elpaca package info as a popup
           help-mode
           compilation-mode)
 	popper-group-function #'popper-group-by-project) ; project.el projects
